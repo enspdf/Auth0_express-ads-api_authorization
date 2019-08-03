@@ -25,6 +25,20 @@ app.get("/", async (req, res) => {
   res.send(await getAds());
 });
 
+const checkJwt = jwt({
+  secret: jwtKsRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://shackox.auth0.com/.well-known/jwks.json`
+  }),
+  audience: "https://ads-api",
+  issuer: `https://shackox.auth0.com/`,
+  algorithms: ["RS256"]
+});
+
+app.use(checkJwt);
+
 app.post("/", async (req, res) => {
   const newAd = req.body;
   await insertAd(newAd);
